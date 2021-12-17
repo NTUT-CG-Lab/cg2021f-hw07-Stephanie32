@@ -120,10 +120,45 @@
 					console.log('uint8img: ', uint8img);
 					console.log('uint8img_len: ', uint8img.length);
 					console.log('uint8img.buffer: ', uint8img.buffer);
-					var uint16img = new Uint16Array(img);
-					console.log('uint16img: ', uint16img);
+					var int16img = new Int16Array(img);
+					console.log('int16img: ', int16img);
 
-					// 測試1
+					var arr_min = 32767;
+					var arr_max = -32768;
+					for(let i = 0; i < int16img.length; i++){
+						if(int16img[i] < arr_min)
+							arr_min = int16img[i];
+						if(int16img[i] > arr_max)
+							arr_max = int16img[i];
+					}
+					console.log('arr_min: ', arr_min);
+					console.log('arr_max: ', arr_max);
+
+					// 測試1-2: int16Array
+					let canvas1 = document.createElement('canvas');
+					canvas1.width = String(dimension.x);
+					canvas1.height = String(dimension.y);
+					document.getElementById('size').appendChild(canvas1);
+
+					const ctx = canvas1.getContext('2d');
+					const arr = new Uint8ClampedArray(dimension.x * dimension.y * 4);
+					// Iterate through every pixel
+					let int16img_iter = 0;
+					for (let i = 0; i < arr.length; i += 4) {
+						var pixel_num = (int16img[int16img_iter]-arr_min)*255/4096;
+						arr[i + 0] = pixel_num;    // R value
+						arr[i + 1] = pixel_num;    // G value
+						arr[i + 2] = pixel_num;    // B value
+						arr[i + 3] = 255;  // A value
+						int16img_iter += 1;
+					}
+					// Initialize a new ImageData object
+					let imageData = new ImageData(arr, dimension.x, dimension.y);
+					// Draw image data to the canvas
+					ctx.putImageData(imageData, 0, 0);
+
+					/*
+					// 測試1: uint8Array
 					let canvas1 = document.createElement('canvas');
 					canvas1.width = String(dimension.x);
 					canvas1.height = String(dimension.y);
@@ -157,7 +192,7 @@
 					let imageData = new ImageData(arr, dimension.x, dimension.y);
 					// Draw image data to the canvas
 					ctx.putImageData(imageData, 0, 0);
-					
+					*/
 					/*
 					// 測試2
 					let canvas1 = document.createElement('canvas');
