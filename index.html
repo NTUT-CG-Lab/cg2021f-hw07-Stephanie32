@@ -106,15 +106,25 @@
 
 					// 轉換為8-bit或16-bit
 					// 顯示正中間的圖片，例: 51張圖中顯示第25張
+					/**
+					 * getImagePixel 所獲取的 pixel data 已經是 raw data 了 顯示成圖片可以寫進一個 canvas 的 imagedata 陣列裡面
+					 * 
+					 * 嘗試:
+					 * https://stackoverflow.com/questions/39606968/convert-arraybuffer-into-imagedata-for-drawing-on-canvas-optimization
+					 * 
+					*/
 					var img = dicom2Raw.getImagePixel(parseInt(dimension.z / 2));
-					console.log('getImagePixel: ', img);
+					console.log('img = getImagePixel: ', img); // img is ArrayBuffer
+					//console.log('img.buffer: ', img.buffer);
 					var uint8img = new Uint8Array(img);
 					console.log('uint8img: ', uint8img);
 					console.log('uint8img_len: ', uint8img.length);
+					console.log('uint8img.buffer: ', uint8img.buffer);
 					var uint16img = new Uint16Array(img);
 					console.log('uint16img: ', uint16img);
 
-					// 測試
+					/*
+					// 測試1
 					let canvas1 = document.createElement('canvas');
 					canvas1.width = String(dimension.x);
 					canvas1.height = String(dimension.y);
@@ -148,7 +158,19 @@
 					let imageData = new ImageData(arr, dimension.x, dimension.y);
 					// Draw image data to the canvas
 					ctx.putImageData(imageData, 0, 0);
+					*/
+					// 測試2
+					let canvas1 = document.createElement('canvas');
+					canvas1.width = String(dimension.x);
+					canvas1.height = String(dimension.y);
+					document.getElementById('size').appendChild(canvas1);
 
+					const ctx = canvas1.getContext('2d');
+					var buffer1 = ctx.getImageData(0,0,ctx.canvas.width, ctx.canvas.height).img;
+					var array = new Uint8ClampedArray(buffer1);
+					console.log('array: ', array);
+					//var image = new ImageData(array, ctx.canvas.width, ctx.canvas.height);//目前失敗
+					//console.log(array.buffer === buffer && image.data.buffer === buffer);
 
 					
 
